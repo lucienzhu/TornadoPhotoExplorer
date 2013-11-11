@@ -1,0 +1,1 @@
+* Nov 12, use angularjs-1.2.min.js
