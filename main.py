@@ -24,22 +24,34 @@ import os
 
 from tornado.options import define, options
 
+import photos
+
 define('port', default=1013, help='run on the given port', type=int)
 
+class Application(tornado.web.Application):
+    def __init__(self):
+        handlers = [
+            (r"/", HomeHandler),
+            (r'/DATA/(.*)', tornado.web.StaticFileHandler, {'path': 'DATA/'}),
+        ]
+        settings = dict(
+            template_path=os.path.join(os.path.dirname(__file__), "templates"),
+            static_path=os.path.join(os.path.dirname(__file__), "static"),
+            debug=True,
+        )
+        tornado.web.Application.__init__(self, handlers, **settings)
 
-class MainHandler(tornado.web.RequestHandler):
+
+class HomeHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("index.html")
+        pb = photos.PhotoBrowser()
+        img_urls = pb.get_all_photo_urls()
+        self.render("index.html", image_urls = img_urls)
 
 
 def main():
     tornado.options.parse_command_line()
-    application = tornado.web.Application([(r"/", MainHandler)],
-            template_path=os.path.join(os.path.dirname(__file__),
-            'templates'),
-            static_path=os.path.join(os.path.dirname(__file__), 'static'
-            ))
-    http_server = tornado.httpserver.HTTPServer(application)
+    http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
 

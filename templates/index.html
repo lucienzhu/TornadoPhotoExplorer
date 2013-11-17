@@ -1,8 +1,19 @@
 {% extends base.html %}
 
+{% block custom_css %}
+<link href="/static/index.css" rel="stylesheet">
+{% end %}
+
 {% block title %}Hello{% end %}
 
 {% block content %}
   <div>
+      {% for im_url in image_urls %}
+      <div class="col-sm-6 col-md-3">
+        <a href="#" class="thumbnail">
+          <img src="{{ im_url }}" alt="...">
+        </a>
+      </div>
+      {% end for %}
   </div>
 {% end %}
