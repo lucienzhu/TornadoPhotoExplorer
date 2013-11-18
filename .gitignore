@@ -1,4 +1,3 @@
-DATA/
 # ignore pycharm IDE.
 .idea/
 *.pyc

@@ -24,9 +24,12 @@ import os
 
 from tornado.options import define, options
 
-import photos
+from photo import photo
+from db import imagebase
 
 define('port', default=1013, help='run on the given port', type=int)
+
+
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -41,11 +44,26 @@ class Application(tornado.web.Application):
         )
         tornado.web.Application.__init__(self, handlers, **settings)
 
+        # database: define a global database
+        self.db = imagebase.ImageDatabase()
+        self.db.init()
+        self.db.run()
 
-class HomeHandler(tornado.web.RequestHandler):
+        # scan folder
+        self.ib = photo.PhotoBrowser()
+        image_urls = self.ib.get_all_photo_urls()
+        self.db.insert_all_image_url(image_urls=image_urls)
+
+
+class BaseHandler(tornado.web.RequestHandler):
+    @property
+    def db(self):
+        return self.application.db
+
+
+class HomeHandler(BaseHandler):
     def get(self):
-        pb = photos.PhotoBrowser()
-        img_urls = pb.get_all_photo_urls()
+        img_urls = self.db.get_all_image_urls()
         self.render("index.html", image_urls = img_urls)
 
 
