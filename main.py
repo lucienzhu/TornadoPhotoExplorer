@@ -26,6 +26,7 @@ from tornado.options import define, options
 
 from photo import photo
 from db import imagebase
+from log import log
 
 define('port', default=1013, help='run on the given port', type=int)
 
@@ -49,10 +50,17 @@ class Application(tornado.web.Application):
         self.db.init()
         self.db.run()
 
+        self.logger = log.Logger()
+
         # scan folder
         self.ib = photo.PhotoBrowser()
-        image_urls = self.ib.get_all_photo_urls()
+
+        # save all thumbnails
+        self.ib.save_all_photo_thumbnails()
+        image_urls = self.ib.get_all_thumbnail_urls()
         self.db.insert_all_image_url(image_urls=image_urls)
+
+        self.logger.log("Initialization Done!!!")
 
 
 class BaseHandler(tornado.web.RequestHandler):
