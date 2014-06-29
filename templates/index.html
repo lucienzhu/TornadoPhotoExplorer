@@ -9,9 +9,9 @@
 {% block content %}
   <div>
       {% for im_url in image_urls %}
-      <div class="col-sm-6 col-md-3">
-        <a href="#" class="thumbnail">
-          <img src="{{ im_url }}" alt="...">
+      <div class="col-xs-3 col-sm-3 col-md-2">
+        <a href="#">
+          <img src="{{ im_url }}" alt="..." class="img-thumbnail">
         </a>
       </div>
       {% end for %}

@@ -74,6 +74,9 @@ class HomeHandler(BaseHandler):
         img_urls = self.db.get_all_image_urls()
         self.render("index.html", image_urls = img_urls)
 
+        self.logger = log.Logger()
+        self.logger.log("Home.")
+
 
 def main():
     tornado.options.parse_command_line()
