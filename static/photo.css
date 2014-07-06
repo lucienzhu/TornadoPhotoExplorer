@@ -1,0 +1,14 @@
+div.all-images {
+    padding-top: 60px;
+}
+
+div.main-image {
+    height: 480px;
+}
+
+div.main-image > img {
+    margin-left: auto;
+    margin-right: auto;
+    height: 100%;
+    display: block;
+}

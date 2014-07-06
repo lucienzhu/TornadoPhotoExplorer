@@ -7,13 +7,16 @@
 {% block title %}Hello{% end %}
 
 {% block content %}
-  <div>
-      {% for im_url in image_urls %}
-      <div class="col-xs-3 col-sm-3 col-md-2">
-        <a href="#">
-          <img src="{{ im_url }}" alt="..." class="img-thumbnail">
-        </a>
+<div>
+  <div class="col-xs-12 col-sm-12 col-md-12">
+    {% for im in image_ids_urls %}
+    <div class="col-xs-4 col-sm-3 col-md-2">
+      <div class="thumbnail tuan">
+        <a href="photo/{{im['id']}}" style="background-image: url({{ im['image_url'] }});"></a>
+        <div>{{im['id']}}</div>
       </div>
-      {% end for %}
+    </div>
+    {% end for %}
   </div>
+</div>
 {% end %}

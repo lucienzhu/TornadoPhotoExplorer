@@ -24,18 +24,20 @@ import os
 
 from tornado.options import define, options
 
-from photo import photo
-from db import imagebase
+from db import image_base
 from log import log
 
-define('port', default=1013, help='run on the given port', type=int)
+from worker import image_scanner
+from worker import thumbnail_manager
 
+define('port', default=1013, help='run on the given port', type=int)
 
 
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r"/", HomeHandler),
+            (r"/photo/([^/]+)", PhotoHandler),
             (r'/DATA/(.*)', tornado.web.StaticFileHandler, {'path': 'DATA/'}),
         ]
         settings = dict(
@@ -46,19 +48,19 @@ class Application(tornado.web.Application):
         tornado.web.Application.__init__(self, handlers, **settings)
 
         # database: define a global database
-        self.db = imagebase.ImageDatabase()
+        self.db = image_base.ImageDatabase()
         self.db.init()
         self.db.run()
 
         self.logger = log.Logger()
 
-        # scan folder
-        self.ib = photo.PhotoBrowser()
+        # setup and run all workers
+        self.workers = [];
+        self.workers.append(image_scanner.ImageScanner(self.db))
+        #self.workers.append(thumbnail_manager.ThumbnailManager())
 
-        # save all thumbnails
-        self.ib.save_all_photo_thumbnails()
-        image_urls = self.ib.get_all_thumbnail_urls()
-        self.db.insert_all_image_url(image_urls=image_urls)
+        for iw in self.workers:
+            iw.run_once()
 
         self.logger.log("Initialization Done!!!")
 
@@ -71,11 +73,20 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class HomeHandler(BaseHandler):
     def get(self):
-        img_urls = self.db.get_all_image_urls()
-        self.render("index.html", image_urls = img_urls)
+        img_ids_urls = self.db.get_all_image_ids_and_urls()
+        self.render("index.html", image_ids_urls = img_ids_urls)
 
         self.logger = log.Logger()
         self.logger.log("Home.")
+
+
+class PhotoHandler(BaseHandler):
+    def get(self, slug):
+        img = self.db.get_3_images_by_id(int(float(slug)))
+        self.render("photo.html", images = img)
+
+        self.logger = log.Logger()
+        self.logger.log("Query image %id" % id)
 
 
 def main():

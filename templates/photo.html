@@ -1,0 +1,30 @@
+{% extends base.html %}
+
+{% block custom_css %}
+<link href="/static/photo.css" rel="stylesheet">
+{% end %}
+
+{% block title %}Hello{% end %}
+
+{% block content %}
+<div>
+  <div class="col-xs-12 col-sm-12 col-md-12">
+    <div class="col-xs-1 col-sm-1 col-md-1">
+      {% if images[0] %}
+      <a href="/photo/{{images[0]['id']}}">Prev</a>
+      {% end %}
+    </div>
+    <div class="col-xs-10 col-sm-10 col-md-10">
+      <div class="main-image">
+        <img src="/{{images[1]['image_url']}}">
+        <p>{{images[1]['id']}}</p>
+      </div>
+    </div>
+    <div class="col-xs-1 col-sm-1 col-md-1">
+      {% if images[2] %}
+      <a href="/photo/{{images[2]['id']}}">Next</a>
+      {% end %}
+    </div>
+  </div>
+</div>
+{% end %}
