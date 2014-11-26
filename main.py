@@ -30,8 +30,7 @@ from log import log
 from worker import image_scanner
 from worker import thumbnail_manager
 
-define('port', default=1013, help='run on the given port', type=int)
-
+from page_manager import *
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -64,32 +63,9 @@ class Application(tornado.web.Application):
 
         self.logger.log("Initialization Done!!!")
 
-
-class BaseHandler(tornado.web.RequestHandler):
-    @property
-    def db(self):
-        return self.application.db
-
-
-class HomeHandler(BaseHandler):
-    def get(self):
-        img_ids_urls = self.db.get_all_image_ids_and_urls()
-        self.render("index.html", image_ids_urls = img_ids_urls)
-
-        self.logger = log.Logger()
-        self.logger.log("Home.")
-
-
-class PhotoHandler(BaseHandler):
-    def get(self, slug):
-        img = self.db.get_3_images_by_id(int(float(slug)))
-        self.render("photo.html", images = img)
-
-        self.logger = log.Logger()
-        self.logger.log("Query image %id" % id)
-
-
 def main():
+    define('port', default=1013, help='run on the given port', type=int)
+    
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options.port)

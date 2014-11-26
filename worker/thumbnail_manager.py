@@ -1,5 +1,5 @@
 import base_worker
-from photo import image_processer as imp
+#from photo import image_processer as imp
 
 __author__ = 'xlzhu'
 
